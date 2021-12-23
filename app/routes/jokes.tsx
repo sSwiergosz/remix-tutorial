@@ -11,11 +11,20 @@ type Joke = {
   content: string;
 };
 
-type LoaderData = { jokes: Array<Joke> };
+type LoaderData = { jokes: Array<Omit<Joke, "content">> };
 
 export const loader: LoaderFunction = async () => {
   const data: LoaderData = {
-    jokes: await db.joke.findMany(),
+    jokes: await db.joke.findMany({
+      take: 5,
+      select: {
+        id: true,
+        name: true,
+      },
+      orderBy: {
+        createdAt: "desc",
+      },
+    }),
   };
 
   return data;
